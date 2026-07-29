@@ -1,5 +1,5 @@
 ---
-name: "Agent Handoff"
+name: "agent-handoff"
 description: "Prepare for the next agent or session by documenting work and leaving codebase in good state"
 ---
 
@@ -17,29 +17,29 @@ Prepare for the next agent or session by documenting your work and leaving the c
 ## Steps
 
 1. **Commit completed work**
-   - Stage and commit any finished changes
-   - Write clear, descriptive commit messages
-   - Don't leave partial work uncommitted unless necessary
+    - Stage and commit any finished changes
+    - Write clear, descriptive commit messages
+    - Don't leave partial work uncommitted unless necessary
 
 2. **Document work in progress**
-   - Add TODO comments for incomplete work
-   - Update task lists or issue trackers
-   - Note any decisions made and why
+    - Add TODO comments for incomplete work
+    - Update task lists or issue trackers
+    - Note any decisions made and why
 
 3. **Summarize the session**
-   - What was accomplished?
-   - What remains to be done?
-   - Any blockers or issues encountered?
+    - What was accomplished?
+    - What remains to be done?
+    - Any blockers or issues encountered?
 
 4. **Clean up**
-   - Remove debugging code or console.logs
-   - Delete temporary files
-   - Ensure tests pass (or document why they don't)
+    - Remove debugging code or console.logs
+    - Delete temporary files
+    - Ensure tests pass (or document why they don't)
 
 5. **Leave notes for next session**
-   - What should the next agent focus on?
-   - Any context that would be helpful?
-   - Links to relevant documentation or issues
+    - What should the next agent focus on?
+    - Any context that would be helpful?
+    - Links to relevant documentation or issues
 
 ## Notes
 
@@ -47,3 +47,4 @@ Prepare for the next agent or session by documenting your work and leaving the c
 - Don't leave uncommitted debugging code
 - Be explicit about what's done vs what's in progress
 - The next agent has no context - write notes accordingly
+
