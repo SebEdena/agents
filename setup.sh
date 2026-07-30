@@ -37,6 +37,50 @@ link() {
   echo "linked  $link_path -> $target"
 }
 
+SKILL_ALIAS_START="# >>> ai-agents: skill-add alias >>>"
+SKILL_ALIAS_END="# <<< ai-agents: skill-add alias <<<"
+SKILL_ALIAS_BODY='skill-add() { npx skills add "$@" -g -a claude-code --copy -y; }'
+RC_FILES=("$HOME/.zshrc" "$HOME/.bashrc")
+
+add_alias_block() {
+  local rc="$1"
+  [ -f "$rc" ] || return 0
+
+  if grep -qF "$SKILL_ALIAS_START" "$rc"; then
+    echo "ok      skill-add alias already in $rc"
+    return
+  fi
+
+  {
+    echo ""
+    echo "$SKILL_ALIAS_START"
+    echo "$SKILL_ALIAS_BODY"
+    echo "$SKILL_ALIAS_END"
+  } >> "$rc"
+  echo "added   skill-add alias to $rc"
+}
+
+remove_alias_block() {
+  local rc="$1"
+  [ -f "$rc" ] || return 0
+
+  if ! grep -qF "$SKILL_ALIAS_START" "$rc"; then
+    echo "skip    skill-add alias not in $rc (absent)"
+    return
+  fi
+
+  local tmp
+  tmp="$(mktemp)"
+  awk -v start="$SKILL_ALIAS_START" -v end="$SKILL_ALIAS_END" '
+    $0 == start { skip=1; next }
+    $0 == end { skip=0; next }
+    skip { next }
+    { print }
+  ' "$rc" > "$tmp"
+  mv "$tmp" "$rc"
+  echo "removed skill-add alias from $rc"
+}
+
 unlink_managed() {
   local target="$1" link_path="$2"
 
@@ -85,7 +129,15 @@ do_setup() {
   link "$REPO_DIR/core/skills" "$HOME/.claude/skills"
 
   echo
-  echo "Done."
+
+  # `skill-add` shell function: wraps `npx skills add` with the flags this
+  # repo requires (see README) so they can't be forgotten on a manual install.
+  for rc in "${RC_FILES[@]}"; do
+    add_alias_block "$rc"
+  done
+
+  echo
+  echo "Done. Restart your shell (or re-source your rc file) to use skill-add."
 }
 
 do_remove() {
@@ -94,6 +146,11 @@ do_remove() {
 
   unlink_managed "$REPO_DIR/core" "$HOME/.config/ruler"
   unlink_managed "$REPO_DIR/core/skills" "$HOME/.claude/skills"
+
+  echo
+  for rc in "${RC_FILES[@]}"; do
+    remove_alias_block "$rc"
+  done
 
   echo
   echo "Done. Repo still at $REPO_DIR — delete it manually if you're done with it."

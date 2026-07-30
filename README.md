@@ -77,9 +77,20 @@ triggering, use manual invocation (`disable-model-invocation: true` +
   | Flag | Why |
   |---|---|
   | `-g` | installs into `~/.claude/skills/`, symlinked to `core/skills/` — lands directly in this repo |
-  | `-a claude-code` | scopes the install to this agent; otherwise the tool also writes into other agents' home-dir folders this repo doesn't track |
+  | `-a claude-code` | not an agent-exclusivity choice — `~/.claude/skills` is just the one folder this repo symlinks into `core/skills/`, so this is the flag that lands the install in version control. Without it, the tool also writes into other agents' home-dir folders this repo doesn't track. Delivery to other agents (OpenCode, Copilot, Cursor, etc.) happens later, per project, via `ruler apply` |
   | `--copy` | **required** — the tool's default mode symlinks to its own cache, violating the "real directories" rule above |
   | `-y` | skip confirmation prompts |
+
+  That's easy to get wrong by hand, so `setup.sh` installs a `skill-add`
+  shell function (in `~/.zshrc`/`~/.bashrc`) that forwards all arguments to
+  `npx skills add` and always appends the 4 flags above — so `--skill`,
+  multi-skill lists, etc. still work, and the required flags can't be
+  forgotten:
+
+  ```bash
+  skill-add owner/repo@skill-name
+  skill-add owner/repo --skill skill-one skill-two   # install several at once
+  ```
 
   Commit the resulting `core/skills/<name>/` folder to persist it and make
   it available on other machines.
@@ -102,9 +113,14 @@ Idempotent — safe to rerun. `setup.sh` (or `setup.sh setup`, same thing):
    | `~/.config/ruler` | `core/` | Ruler's global fallback (rules only), used by `ruler apply` when a project has no local `.ruler` |
    | `~/.claude/skills` | `core/skills/` | Claude Code's native global skills folder, independent of Ruler |
 
+3. Adds the `skill-add` shell function (see "Adding a new skill" above) to
+   `~/.zshrc` and `~/.bashrc`, whichever exist — idempotent, marked by an
+   `# >>> ai-agents: skill-add alias >>>` block.
+
 To undo the machine wiring, run `~/.ai-agents/setup.sh remove` — it removes
-the 2 symlinks above (only if they still point here) and leaves the repo
-itself in place.
+the 2 symlinks above (only if they still point here), removes the
+`skill-add` block from the same rc files, and leaves the repo itself in
+place.
 
 ## Using Ruler in a project
 
