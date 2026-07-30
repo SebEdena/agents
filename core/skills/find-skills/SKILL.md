@@ -87,20 +87,36 @@ React and Next.js performance optimization guidelines from Vercel Engineering.
 (185K installs)
 
 To install it:
-npx skills add vercel-labs/agent-skills@react-best-practices
+skill-add vercel-labs/agent-skills@react-best-practices
 
 Learn more: https://skills.sh/vercel-labs/agent-skills/react-best-practices
 ```
 
 ### Step 6: Offer to Install
 
-If the user wants to proceed, you can install the skill for them:
+If the user wants to proceed, install it with the full flag set this repo
+requires (see README.md) — never the bare `npx skills add <source>`, which
+skips flags this repo depends on:
 
 ```bash
-npx skills add <owner/repo@skill> -g -y
+npx skills add <owner/repo@skill> -g -a claude-code --copy -y
 ```
 
-The `-g` flag installs globally (user-level) and `-y` skips confirmation prompts.
+| Flag | Why |
+|---|---|
+| `-g` | installs into `~/.claude/skills/`, symlinked to `core/skills/` — lands directly in this repo |
+| `-a claude-code` | not an agent-exclusivity choice — `~/.claude/skills` is just the one folder this repo symlinks into `core/skills/`, so this is the flag that lands the install in version control. Without it, `npx skills add -g` also writes into other agents' home-dir folders this repo doesn't track. Delivery to other agents (OpenCode, Copilot, Cursor, etc.) happens later, per project, via `ruler apply` |
+| `--copy` | **required** — the tool's default mode symlinks to its own cache, violating this repo's "real directories under `core/skills/`" rule |
+| `-y` | skip confirmation prompts |
+
+To install more than one skill from the same repo, use `--skill` (`-s`)
+instead of chaining `@skill-name`, e.g.
+`npx skills add owner/repo --skill skill-one skill-two -g -a claude-code --copy -y`.
+
+If the user has this repo's `setup.sh` wired up, the `skill-add` shell
+function (see README.md) already carries all of these flags — prefer
+telling the user to run `skill-add <source> [add-options...]` over typing
+the raw `npx skills add` invocation.
 
 ## Common Skill Categories
 
